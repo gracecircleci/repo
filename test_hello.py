@@ -16,7 +16,9 @@ xml_string = ''' <?xml version="1.0" encoding="UTF-8"?>
 '''
 
 print('Current getcwd:', os.getcwd())
-with open('~/test-results/report.html', 'w+') as f:
+if not os.path.exists('test-results')
+  os.makedirs('test-results')
+with open('~/test-results/report.xml', 'w+') as f:
 
   f.write(xml_str)
 
