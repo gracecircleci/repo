@@ -6,7 +6,7 @@ jobs:
       - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
     steps:
       - checkout # check out the code in the project directory
-      - run: echo "grace circleci world" # run the `echo` command
+      - run:
           command: | # use pipenv to install dependencies
              pip3 install python3.8
              pip3 install pandas
