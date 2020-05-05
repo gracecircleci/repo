@@ -12,6 +12,6 @@ html_string = '''
         <p>GE had the most predictable stock price in 2014.  </p>
     </body>
 </html>'''
-with open('~/report-results/report.html', 'w+') as f:
+with open('~/test-results/report.html', 'w+') as f:
   f.write(html_str)
 
