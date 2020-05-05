@@ -1,22 +1,22 @@
 import os
 
-html_string = '''
-<html>
-    <body>
-        <h1> CICD Test Runs </h1>
-
-        <!-- *** Section 1 *** --->
-        <h2>Section 1: Apple Inc. (AAPL) stock in 2014</h2>
-        <p>Apple stock price rose steadily through 2014.</p>
-        
-        <!-- *** Section 2 *** --->
-        <h2>Section 2: AAPL compared to other 2014 stocks</h2>
-        <p>GE had the most predictable stock price in 2014.  </p>
-    </body>
-</html>'''
+xml_string = ''' <?xml version="1.0" encoding="UTF-8"?>
+<test_result>
+    <test_runs>
+        <test_run started="STARTED_TS" status="Skipped" duration="14" name="bandTestA" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="0" name="bandTestB" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="bandTestC" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="bandTestD" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="0" name="bandTestE" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="always_true_A" class="CalcsTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="always_true_B" class="CalcsTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="always_true_C" class="CalcsTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+    </test_runs>
+</test_result>
+'''
 
 print('Current getcwd:', os.getcwd())
 with open('~/test-results/report.html', 'w+') as f:
 
-  f.write(html_str)
+  f.write(xml_str)
 
