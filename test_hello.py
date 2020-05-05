@@ -1,3 +1,5 @@
+import os
+
 html_string = '''
 <html>
     <body>
@@ -12,6 +14,10 @@ html_string = '''
         <p>GE had the most predictable stock price in 2014.  </p>
     </body>
 </html>'''
+
+print('Current getcwd:', os.getcwd())
+print('~/test-results:', ~/test-result)
 with open('~/test-results/report.html', 'w+') as f:
+
   f.write(html_str)
 
