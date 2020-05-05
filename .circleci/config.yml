@@ -17,6 +17,14 @@ jobs:
             touch ~/test-results/report.html
             python test_hello.py
 
+      - run:
+          command: |
+            python test_two.py
+
+      - run:
+          command: |
+            python test_three.py
+
       - store_test_results:
             path: ~/test-results
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/

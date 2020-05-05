@@ -1,6 +1,7 @@
 import os
 
-xml_str = ''' <?xml version="1.0" encoding="UTF-8"?>
+xml_str = ''' 
+<?xml version="1.0" encoding="UTF-8"?>
 <test_result>
     <test_runs>
         <test_run started="STARTED_TS" status="Skipped" duration="14" name="bandTestA" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
