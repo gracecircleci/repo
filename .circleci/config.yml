@@ -14,6 +14,7 @@ jobs:
           command: |
             pipenv run python --version 
             mkdir -p ~/test-results
+            touch ~/report-results/report.html
             python test_hello.py
 
       - store_test_results:
