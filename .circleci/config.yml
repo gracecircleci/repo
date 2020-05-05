@@ -13,3 +13,5 @@ jobs:
       - run:
           command: |
             pipenv run python --version 
+            mkdir -p /tmp/test-results
+            python test_hello.py
