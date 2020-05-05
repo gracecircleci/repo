@@ -13,8 +13,8 @@ jobs:
       - run:
           command: |
             pipenv run python --version 
-            mkdir -p /tmp/test-results
+            mkdir -p ~/test-results
             python test_hello.py
 
       - store_test_results:
-            path: /tmp/test-reports
+            path: ~/test-results
