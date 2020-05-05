@@ -3,11 +3,13 @@ jobs:
   build:
     working_directory: ~/1CircleCI/repo
     docker: 
-      - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
+      - image: circleci/python:3.7-node # the primary container
     steps:
       - checkout # check out the code in the project directory
       - run:
           command: | # use pipenv to install dependencies
-             pip install python3.8
-             pip install pandas
-             pip install numpy
+            sudo pip install pipenv
+            pipenv install
+      - run:
+          command: |
+            pipenv run python --version 
