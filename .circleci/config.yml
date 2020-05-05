@@ -8,6 +8,6 @@ jobs:
       - checkout # check out the code in the project directory
       - run:
           command: | # use pipenv to install dependencies
-             pip3 install python3.8
-             pip3 install pandas
-             pip3 install numpy
+             pip install python3.8
+             pip install pandas
+             pip install numpy
