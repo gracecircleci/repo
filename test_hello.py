@@ -16,7 +16,6 @@ html_string = '''
 </html>'''
 
 print('Current getcwd:', os.getcwd())
-print('~/test-results:', ~/test-result)
 with open('~/test-results/report.html', 'w+') as f:
 
   f.write(html_str)
