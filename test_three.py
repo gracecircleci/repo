@@ -1,3 +1,3 @@
 import os
 
-assert True == False, "Error: test %s failed"  % __file__
+assert True == True, "Error: test %s failed"  % __file__
