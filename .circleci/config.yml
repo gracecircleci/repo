@@ -8,6 +8,7 @@ jobs:
       - checkout # check out the code in the project directory
       - run:
           command: | # use pipenv to install dependencies
+            sudo pip install pandas
             sudo pip install pipenv
             pipenv install
       - run:
