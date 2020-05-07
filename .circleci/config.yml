@@ -16,13 +16,13 @@ jobs:
             pipenv run python --version 
             mkdir -p ~/test-results
             touch ~/test-results/report.html
-            python test_hello.py
-
-      - run:
-          command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
-            python -m unittest test.test_catalog
+            echo "$(pwd)"
+      - run:
+          command: |
+            echo "test_catalog_row_title"
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_row_title
       - run:
           command: |
             python test_three.py
