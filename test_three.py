@@ -6,6 +6,11 @@ from urllib.parse import unquote, quote, urlparse
 from enum import Enum
 import pandas as pd
 from pandas import json_normalize
+import unittest
+
+class SimpleTest(unittest.TestCase):
+  def test(self):
+    self.assertTrue(True)
 
 class CatalogEnum(Enum):
     HOME = 1
@@ -43,3 +48,7 @@ if __name__ == '__main__':
   response = urllib.request.urlopen(req, data)
   print('response status=', response.status)
   assert response.status==200
+
+  print('calling unittest.main')
+  unittest.main()
+  print('calling done unittest.main')
