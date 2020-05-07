@@ -7,11 +7,13 @@ jobs:
     steps:
       - checkout # check out the code in the project directory
       - run:
+          name: "Install dependencies"
           command: | # use pipenv to install dependencies
             sudo pip install pandas
             sudo pip install pipenv
             pipenv install
       - run:
+          name: "check python version"
           command: |
             pipenv run python --version 
             mkdir -p ~/test-results
@@ -19,7 +21,7 @@ jobs:
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
       - run:
-          name: "test_catalog_row_title. 'Home'"
+          name: "test_catalog_row_title. example:'Home'"
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
