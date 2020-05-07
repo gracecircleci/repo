@@ -20,8 +20,9 @@ jobs:
 
       - run:
           command: |
-            python test_two.py
-
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog
       - run:
           command: |
             python test_three.py
