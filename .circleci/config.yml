@@ -19,11 +19,29 @@ jobs:
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
       - run:
+          name: "test_catalog_row_title. 'Home'"
           command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
             python -m unittest test.test_catalog.CatalogTest.test_catalog_row_title
       - run:
+          name: "test_catalog_rows. eg. [1300, 1301, 9, 1537, 1517, 1142]"
           command: |
-            python test_three.py
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_rows
+      - run:
+          name: "test_catalog_home_row_title. example: New Hero - 2019"
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_title
+      - run:
+          name: "test_catalog_home_row_length. example: 5"
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_length
 
       - store_test_results:
             path: ~/test-results
