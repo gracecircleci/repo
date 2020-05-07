@@ -20,9 +20,6 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
       - run:
           command: |
-            cd test_framework
-            export PYTHONPATH=$PYTHONPATH:.
-            echo "test_catalog_row_title"
             python -m unittest test.test_catalog.CatalogTest.test_catalog_row_title
       - run:
           command: |
