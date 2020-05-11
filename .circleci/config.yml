@@ -33,17 +33,77 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             python -m unittest test.test_catalog.CatalogTest.test_catalog_rows
       - run:
-          name: "test_catalog_home_row_title. example: New Hero - 2019"
+          name: "test_catalog_home_row_title. 1300 example: New Hero - 2019"
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
             python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_title
+      - run:
+          name: "test_catalog_home_row_one_title. compare title of 1301 "
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_one_title
+      - run:
+          name: "test_catalog_home_row_two_title. compare title of 9"
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_two_title
+      - run:
+          name: "test_catalog_home_row_three_title. compare title "
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_three_title
+      - run:
+          name: "test_catalog_home_row_four_title. compare title "
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_four_title
+      - run:
+          name: "test_catalog_home_row_five_title. compare title "
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_five_title
       - run:
           name: "test_catalog_home_row_length. example: 5"
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
             python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_length
+      - run:
+          name: "test_catalog_home_row_one_length. compare length of 1301"
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_one_length
+      - run:
+          name: "test_catalog_home_row_two_length. compare length of Apps"
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_two_length
+      - run:
+          name: "test_catalog_home_row_three_length. compare length "
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_three_length
+      - run:
+          name: "test_catalog_home_row_iids_random_drafting if same length of 1300 from vue and catalog it is pass "
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog.CatalogTest.test_catalog_home_row_four_length
+
+      - store_test_results:
+            path: ~/test-results
+      - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: test-results
+          destination: tr1
 
       - store_test_results:
             path: ~/test-results
