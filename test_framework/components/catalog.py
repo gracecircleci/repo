@@ -1,4 +1,4 @@
-# catalog.py
+import argparse, textwrap
 import os.path
 import json, time
 from urllib.parse import unquote, quote, urlparse
@@ -35,8 +35,29 @@ class Const:
         return json.dumps(headersdict)
 
 class Catalog(object):    
-    def __init__(self):
+    def __init__(self,proto=None, host=None, uri=None, query_string=None, url=None):
+        self.protocol = proto
+        self.host = host
+        self.uri = uri
+        self.qs = query_string
+
         self.logger = EzLogger.getLogger(__file__)
+
+    def getJsonFromCatalogUrl(self, catalogId=CatalogEnum.HOME.value, url=None):
+        # construct and visit home_tab url
+        if url is None:
+            url = EzUtil.constructUrl(protocol=self.protocol, host=self.host, uri=self.uri, qstring=self.qs)
+        assert url
+
+        outfile = 'output/catqlog.json'
+        payload_str = '{ "Catalogs":[{ "Id" : %d }]}' % catalogId
+        data = json.loads(payload_str)
+        headersdict = json.loads(Const().HEADERS)
+        status_code, url, jsonobj = EzUtil.urlToJsonWithPost(url, data_dict=data, hds_dict=headersdict, outfile=outfile)
+        assert status_code == 200
+        assert jsonobj is not None
+        self.logger.info('catalog url=%s. output json file is available %s' % (url, outfile))
+        return url, jsonobj
 
     def getCatalogRowIdList(self, url, catalogId=CatalogEnum.HOME.value, outfile='output/catalog.json'):
         assert url is not None
@@ -103,7 +124,9 @@ class Catalog(object):
         # ['id', 'title', 'subTitle', 'action', 'metadata', 'imagePath']
         dfColIndex = ['id', 'title', 'subTitle', 'action']
         df = pd.DataFrame(data=catJsonObj['items'], index=dfRowIndex, columns=dfColIndex)
+        #print('>>> df=', df)
         df = df.loc[ df['id'].isin(row['items'])] # row['items'] example:[28269,28117,28119,28268,28124]
+        #print('>>> df=', df)
 
         return row['id'], row['title'], row['items']
 
@@ -122,20 +145,40 @@ class Catalog(object):
     @staticmethod
     def run_cat_rows():
         #curl -i -X POST -H 'Content-Type: application/json' -H 'LanguageIso2Code: EN' -H 'CountryIso2Code: US' -H 'ClientDateTimeSeconds: 1588700639' -H 'SctvVersion: 5.0.0.0' -H 'ModelName: E50-F2' -d '{ "Catalogs":[{ "Id" : 1 }]}' http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=3
-        url = 'http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=3' 
-        catalog_id, catalog_title, row_list = Catalog().getCatalogRowIdList(url)
+        url = 'http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=3'
+        cat = Catalog()
+        cat_url, catJsonObj = cat.getJsonFromCatalogUrl(catalogId=CatalogEnum.HOME.value, url=url)
+        catalog_id, catalog_title, row_list = Catalog().getCatalogRowIdList(cat_url)
         return catalog_id, catalog_title, row_list
 
     @staticmethod
-    def run_cat_home_iids():
-        url = 'http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=100' 
-        status, url, jsonobj = Catalog().getCatalogJsonObjFromUrl(url)
-        catalog_id, catalog_title, rows = Catalog().getRowDetailsByIndex(jsonobj)
+    def run_cat_home_iids(row_index=0):
+        proto, host, uri, qs, url = get_command_line_args()
+        cat = Catalog(proto, host, uri, qs)
+        url, jsonobj  = cat.getJsonFromCatalogUrl(url=None)
+
+        catalog_id, catalog_title, rows = cat.getRowDetailsByIndex(jsonobj, row_index=row_index)
         return catalog_id, catalog_title, rows
 
+
+example_text = '''example:
+  python3 components/catalog.py --protocol 'http' --host 'catalog-dev.smartcasttv.com' --uri 'catalogs' --qs 'rowsToExpand=100'
+  or 
+  python3 components/catalog.py --url 'http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=100'
+ '''
+
+def get_command_line_args():
+    parser = argparse.ArgumentParser(epilog=example_text, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('--protocol', default='http', help='protocol eg: http or https')
+    parser.add_argument('--host', default='catalog-dev.smartcasttv.com', help='host eg: catalog-dev.smartcasttv.com')
+    parser.add_argument('--uri', default='catalogs',help='catalogs')
+    parser.add_argument('--qs', default='rowsToExpand=100',help='query_sting eg: rowsToExpand=100')
+    parser.add_argument('--url', default='http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=100',
+                        help='http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=100')
+
+    args = parser.parse_args()
+    return args.protocol, args.host, args.uri, args.qs, args.url
 if __name__ == '__main__':
     catalog_id, catalog_title, row_list = Catalog().run_cat_rows()
-    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids()
-
-
-
+    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=0)
+    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=1)

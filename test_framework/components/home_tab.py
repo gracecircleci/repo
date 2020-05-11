@@ -59,7 +59,7 @@ class HomeTab(object):
         DataUtil().writeDataColumnNamesToFile(self.dataframe, outfile='output/home_columns.txt')
         return self.dataframe 
 
-    def getFirstRowFromVueService(self, jsonobj, items_pos= 0, item_id=1300):
+    def getFirstRowFromVueService(self, jsonobj, items_pos= 0, item_id=1300, the_vid=92):
         '''
         From the jsonobj that we get from the http GET response
         :param jsonobj: the jsonobj that we get from the http GET response
@@ -68,6 +68,7 @@ class HomeTab(object):
         :return: title, row_item_title, iid_list.
                eg: title=Home, row_item_title=New Hero - 2019, iid_list=[28700, 28538, 28544, 28549, 28550]
         '''
+        title, row_item_title, iid_list = None, None, None
         assert jsonobj is not None
         self.logger.info('Getting items_pos=%s, item_id=%s' % (items_pos, item_id))
 
@@ -77,18 +78,24 @@ class HomeTab(object):
 
         the_record_path = ['Frame', 'Data', 'Items', 'Frame','Data','SummaryItems']
         dflevel2 = json_normalize(data=jsonobj['Value'][0], record_path=the_record_path, max_level=8)
-        print('dfelevel2 columns=', dflevel2.columns)
+        #print('dfelevel2 columns=', dflevel2.columns)
 
         # only interested in the column 'Vibe.Root.Iid' where 'Vid'==92
-        dflevel3 = dflevel2.reindex(columns=['Vid', 'Vibe.Root.Iid'])
-        dflevel3 = dflevel3.loc[dflevel3['Vid']==92]
-        dflevel3 = dflevel3.reindex(columns=['Vibe.Root.Iid'])
-        iid_list = iid_list = [x for b in dflevel3.values for x in b ]
+        dflevel3 = dflevel2.reindex(columns=['Vid', 'Vibe.Root.Iid', 'Frame.Data.Title', 'Frame.Data.SubTitles'])
+        # print('==============>>>>>')
+        # print(dflevel3)
+        #print('================================')
+        dflevel4 = dflevel3[dflevel3['Vid']==the_vid]
+        # print('===========dflevel4==========')
+        # print(dflevel4)
+        # print('===========dflevel4==========')
+        dflevel5 = dflevel4.reindex(columns=['Vibe.Root.Iid'])
+        iid_list = iid_list = [x for b in dflevel5.values for x in b ]
 
         # pprint for debugging
-        self.pprintDataFrame(data=jsonobj['Value'][0],
-                             record_path=['Frame', 'Data', 'Items', 'Frame','Data','SummaryItems'],
-                             columns=['Vid','Vibe.Root.Iid','Frame.Data.Pivot.Vid','Frame.Data.Title','Frame.Data.SubTitles','Href'])
+        # self.pprintDataFrame(data=jsonobj['Value'][0],
+        #                      record_path=['Frame', 'Data', 'Items', 'Frame','Data','SummaryItems'],
+        #                      columns=['Vid','Vibe.Root.Iid','Frame.Data.Pivot.Vid','Frame.Data.Title','Frame.Data.SubTitles','Href'])
 
         self.logger.info('title=%s, row_item_title=%s, iid_list=%s' % (title, row_item_title, iid_list))
         return title, row_item_title, iid_list
@@ -131,11 +138,12 @@ class HomeTab(object):
         return vue_title, vue_rows
 
     @staticmethod
-    def runVueServiceFirstRow():
+    def runVueServiceFirstRow(item_pos=0, item_id=1300, the_vid=92):
         proto, host, uri, qstr = get_command_line_args()
         homeObj = HomeTab(proto, host, uri, qstr)
         url, jsonObj = homeObj.getJsonFromHomeUrl()  # construct url from proto,host, uri,qstr
-        title, row_item_title, iid_list = homeObj.getFirstRowFromVueService(jsonObj, items_pos=0, item_id=1300)
+        title, row_item_title, iid_list = homeObj.getFirstRowFromVueService(
+            jsonObj, items_pos=item_pos, item_id=item_id, the_vid=the_vid )
         return title, row_item_title, iid_list
 
 example_text='''example:
@@ -156,7 +164,14 @@ def get_command_line_args():
 
 
 if __name__ == '__main__':
-    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow()
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=0, item_id=1300, the_vid=92)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=1, item_id=1301, the_vid=2000013)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=2, item_id=9, the_vid=2000015)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=3, item_id=1537, the_vid=2000010)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=3, item_id=1517, the_vid=2000009)
+
+
+
 
     
 
