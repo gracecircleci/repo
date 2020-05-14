@@ -74,9 +74,11 @@ def get_command_line_args():
             help='api/1.0.1.0/auth/authserversigninwithdetails.aspx')
     parser.add_argument('--qs', default='clientTypeId=2000001&appTypeId=2000001&_url=', 
             help='query_sting eg: clientTypeId=2000001&appTypeId=2000001&_url=')
+    parser.add_argument('--url', default=None, help='url')
+
 
     args = parser.parse_args()
-    return args.protocol, args.host, args.uri, args.qs
+    return args.protocol, args.host, args.uri, args.qs, args.url
 
 if __name__ == '__main__':
     '''
@@ -86,6 +88,6 @@ if __name__ == '__main__':
     uri = 'api/1.0.1.0/auth/authserversigninwithdetails.aspx'
     qstr = 'clientTypeId=2000001&appTypeId=2000001&_url=1'
     '''
-    proto, host, uri, qstr = get_command_line_args()
+    proto, host, uri, qstr, url = get_command_line_args()
     signOnObj = SignOn(proto,host,uri, qstr)
     signOnObj.signon_and_verify()

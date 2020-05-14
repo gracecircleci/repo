@@ -124,11 +124,44 @@ class Catalog(object):
         # ['id', 'title', 'subTitle', 'action', 'metadata', 'imagePath']
         dfColIndex = ['id', 'title', 'subTitle', 'action']
         df = pd.DataFrame(data=catJsonObj['items'], index=dfRowIndex, columns=dfColIndex)
-        #print('>>> df=', df)
+        #print('df=', df)
         df = df.loc[ df['id'].isin(row['items'])] # row['items'] example:[28269,28117,28119,28268,28124]
-        #print('>>> df=', df)
+        #print('df=', df)
 
         return row['id'], row['title'], row['items']
+
+    def getRowItemDetails(self, catJsonObj, row_index=0, cols=['id', 'title', 'subTitle', 'action'], iid_idx=0):
+        assert catJsonObj is not None
+        assert isinstance(row_index, int) and row_index >=0
+        assert iid_idx is not None
+
+        catalogTitle = self.getCatalogTitle(catJsonObj) # cat title
+        catalogId = self.getCatalogId(catJsonObj)
+
+        row = catJsonObj['rows'][row_index]
+
+        dfRowIndex = None
+        dfColIndex = ['id', 'title', 'subTitle', 'action', 'metadata', 'imagePath']
+        df = pd.DataFrame(data=catJsonObj['items'], index=dfRowIndex, columns=dfColIndex)
+        df = df.loc[df['id'].isin(row['items'])]  # row['items'] example:[28269,28117,28119,28268,28124]
+        #print('df=', df)
+        # item_details for item of iid_idx
+        print('row=', row['items'][iid_idx])
+        series1 = df[df['id'] == row['items'][iid_idx]]  # get item details of iid (example: 28117)
+        # series1 is like a dictionary
+        the_json = series1.to_json(orient='columns')
+        item_detail_jsonobj = json.loads(the_json)
+        dict1 = {}
+        dict1['title'] = item_detail_jsonobj['title']
+        dict1['id'] = item_detail_jsonobj['id']
+        dict1['subtitle'] = item_detail_jsonobj['subTitle']
+        dict1['imagePath'] = item_detail_jsonobj['imagePath']
+        dict1['action'] = item_detail_jsonobj['action']
+        dict1['metadata'] = item_detail_jsonobj['metadata']
+        return dict1
+
+
+
 
     def print_catalog_rows(self, catJsonObj):
         rows = self.getCatalogRows(catJsonObj)
@@ -160,6 +193,17 @@ class Catalog(object):
         catalog_id, catalog_title, rows = cat.getRowDetailsByIndex(jsonobj, row_index=row_index)
         return catalog_id, catalog_title, rows
 
+    @staticmethod
+    def run_cat_home_row_item(row_index=0, item_index=0):
+        proto, host, uri, qs, url = get_command_line_args()
+        cat = Catalog(proto, host, uri, qs)
+        url, jsonobj  = cat.getJsonFromCatalogUrl(url=None)
+        dict1 = cat.getRowItemDetails(jsonobj, row_index=0, iid_idx=item_index)
+        print('title=%s, id=%s, subTitle=%s, imagePath=%s, \n\n action=%s, metadata=%s' %
+              (dict1['title'], dict1['id'], dict1['subtitle'], dict1['imagePath'], dict1['action'], dict1['metadata']))
+
+        return dict1
+
 
 example_text = '''example:
   python3 components/catalog.py --protocol 'http' --host 'catalog-dev.smartcasttv.com' --uri 'catalogs' --qs 'rowsToExpand=100'
@@ -182,3 +226,4 @@ if __name__ == '__main__':
     catalog_id, catalog_title, row_list = Catalog().run_cat_rows()
     catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=0)
     catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=1)
+    dict1 = Catalog().run_cat_home_row_item(row_index=0, item_index=0) # item_index = 0 not found?
