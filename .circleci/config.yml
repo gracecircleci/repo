@@ -13,6 +13,12 @@ jobs:
             sudo pip install pipenv
             pipenv install
       - run:
+          name: "test_catalog. example: Home"
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            python -m unittest test.test_catalog
+      - run:
           name: "test_catalog_row_title. example: Home"
           command: |
             cd test_framework
