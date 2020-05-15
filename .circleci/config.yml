@@ -11,7 +11,7 @@ jobs:
           command: | # use pipenv to install dependencies
             sudo pip install pandas
             sudo pip install pipenv
-	    sudo pip install unittest-xml-reporting
+            sudo pip install unittest-xml-reporting
             pipenv install
       - run:
           name: "test_catalog. example: Home"
