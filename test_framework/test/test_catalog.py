@@ -1,4 +1,5 @@
 import unittest
+import xmlrunner
 import json, sys
 import logging
 from components.catalog import CatalogEnum, Const
@@ -6,6 +7,18 @@ from components.catalog import Catalog
 from components.home_tab import HomeTab
 from util.urlutils import EzUtil
 
+xml_str = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<test_result>
+    <test_runs>
+        <test_run started="STARTED_TS" status="Skipped" duration="14" name="bandTestA" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="0" name="bandTestB" class="BandTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="always_true_A" class="CalcsTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="always_true_B" class="CalcsTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+        <test_run started="STARTED_TS" status="Passed" duration="1" name="always_true_C" class="CalcsTest" package="com.mycomp.devops.demoapp" module="webapp"/>
+    </test_runs>
+</test_result>
+'''
 CATALOG_URL = 'http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=100'
 VUE_SERVICE_URL = 'http://api-stage.vizio.com/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":1,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE='
 
@@ -180,4 +193,8 @@ class CatalogTest(unittest.TestCase):
            '\n Diffs ==>> catalog_row_iids=%s, vue_iid_list=%s' % (catalog_row_iids, vue_iid_list))
 
 if __name__ == '__main__':
-    unittest.main()
+  with open('../catalog-results.xml', 'w+') as output:
+    unittest.main(
+        testRunner = xmlrunner.XMLTestRunner(output=output.decode('utf-8')),
+	failfast=False, buffer=False, catchbreak=False)
+	
