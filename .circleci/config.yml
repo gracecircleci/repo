@@ -126,5 +126,5 @@ jobs:
       - store_test_results:
             path: test_framework/gtest_results
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-          path: test-results
+          path: test_framework/gtest_results 
           destination: tr1
