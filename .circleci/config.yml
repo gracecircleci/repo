@@ -19,6 +19,7 @@ jobs:
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
             python -m xmlrunner test.test_catalog
+            mkdir -p ~/gtest-results
       - run:
           name: "test_common_item_details_subtitle_item eg. common item in 1300 subtitle 'Free to Watch' "
           command: |
