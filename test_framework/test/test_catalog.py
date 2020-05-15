@@ -193,8 +193,15 @@ class CatalogTest(unittest.TestCase):
            '\n Diffs ==>> catalog_row_iids=%s, vue_iid_list=%s' % (catalog_row_iids, vue_iid_list))
 
 if __name__ == '__main__':
-  with open('../catalog-results.xml', 'w+') as output:
-    unittest.main(
-        testRunner = xmlrunner.XMLTestRunner(output=output.decode('utf-8')),
+  filedir = '../gtest_results'
+  assertTrue(filedir is not None, 'Result Dir not exists: %s' % filedir)
+  filepath = '%s/test_catalog_reports' % filedir
+  unittest.main(
+        testRunner = xmlrunner.XMLTestRunner(output=filedir),
 	failfast=False, buffer=False, catchbreak=False)
+  '''
+    unittest.main(
+        testRunner = xmlrunner.XMLTestRunner(output=fout.decode('utf-8')),
+	failfast=False, buffer=False, catchbreak=False)
+  '''
 	

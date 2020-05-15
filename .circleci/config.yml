@@ -20,7 +20,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             mkdir -p ./gtest_results
             ls ./gtest_results
-            python -m xmlrunner test.test_catalog
+            python -m xmlrunner test.test_catalog -o gtest_results
       - run:
           name: "test_common_item_details_subtitle_item eg. common item in 1300 subtitle 'Free to Watch' "
           command: |
@@ -124,7 +124,9 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             python -m unittest test.test_catalog_row_items.CatalogRowItemTest.test_common_item_details_subtitle_item1
       - store_test_results:
-            path: ~/test-results
+            cd test_framework
+            path: ./gtest_results
+            ls ./gtest_results
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test-results
           destination: tr1
