@@ -17,13 +17,13 @@ jobs:
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
-            python -m unittest test.test_catalog
+            python -m xmlrunner test.test_catalog
       - run:
           name: "test_common_item_details_subtitle_item eg. common item in 1300 subtitle 'Free to Watch' "
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
-            python -m unittest test.test_catalog_row_items.CatalogRowItemTest.test_common_item_details_subtitle_item
+            python -m xmlrunner test.test_catalog_row_items.CatalogRowItemTest.test_common_item_details_subtitle_item
       - run:
           name: "test_common_item_details_subtitle_item1 eg. common item in 1300 subtitle 'Click to Watch' "
           command: |
