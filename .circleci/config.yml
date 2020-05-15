@@ -128,7 +128,6 @@ jobs:
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test_framework/gtest_results 
           destination: tr1
-  nightly:
-   triggers:
+  triggers:
     - schedule:
        cron: "0 * * * *"
