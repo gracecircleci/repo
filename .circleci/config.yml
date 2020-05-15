@@ -1,5 +1,6 @@
-version: 2.1
-jobs:
+workflow:
+ version: 2.1
+ jobs:
   build:
     working_directory: ~/1CircleCI/repo
     docker: 
@@ -128,3 +129,7 @@ jobs:
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test_framework/gtest_results 
           destination: tr1
+ nightly:
+  triggers:
+    - schedule:
+       cron: "0 * * * *"
