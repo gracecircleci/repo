@@ -21,14 +21,6 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             mkdir -p ./gtest_results
             ls ./gtest_results
-            python test/test_catalog.py catalog-dev.smartcasttv.com api-stage.vizio.com 
-      - run:
-          name: "test_catalog. example: Home"
-          command: |
-            cd test_framework
-            export PYTHONPATH=$PYTHONPATH:.
-            mkdir -p ./gtest_results
-            ls ./gtest_results
             python -m xmlrunner test.test_catalog -o gtest_results
       - run:
           name: "test_common_item_details_subtitle_item eg. common item in 1300 subtitle 'Free to Watch' "
