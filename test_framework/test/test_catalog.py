@@ -363,5 +363,5 @@ if __name__ == '__main__':
     # popping the parameters is a must.
     for i in range(len(sys.argv[1:])):
         sys.argv.pop()
-    unittest.main(testRunner=HTMLTestRunner(output='/Users/gracetzay/Vizio/gtest_repo/test_framework/test_output_dir'))
+    unittest.main(testRunner=HTMLTestRunner(output='./gtest_results'))
 
