@@ -11,16 +11,22 @@ from pandas import json_normalize
 
 class CatalogEnum(Enum):
     HOME = 1
-    SHOWS =2
+    SHOWS = 2
     MOVIES = 3
+    LEARN = 4
+    SEARCH = 5
     def __str__(self):
         return '%s' % self.name
 
 class Const:
     @property
     def HEADERS(self):
+        #device_context_json_orig_str = '''{"SYSTEM_INFO":{"SUBSERIES":"M8","SOC":0,"SERIES":"M","MODEL_RESOLUTION":2,"DIID":"9d021e22-c237-4253-asdf-ccbb1234567c","VERSION":"6.0.11.1","DEVICE_TYPE":0,"CHIPSET":2,"MODEL_TYPE":4,"PANEL_TYPE":0,"TVAD_ID":{"LMT":0,"IFA":"aa84c930-asdf-asdf-8cc0-123b55b2ff07","IFA_TYPE":"dpid"},"MODEL_NAME":"M558-G1","SIZE":558},"CAPABILITIES":{"FRC":false,"USB_POWER":true,"ABC":true,"HDR":[0,1,2,3],"MEMC":false,"BATTERY":false,"type":"tvtuner","ACCESSIBILITY":{"TTS":true,"ZOOMMODE":true},"memc":0,"BLE":false,"TUNER":true,"ENERGY_STAR":false,"BACKLIGHT":false},"SC_INFO":"HOME-TEST v53.8","BINARIES":{"CONJURE":"SX7B-3.0.315.0","AIRPLAY":"0.0.4644","COBALT":"0.19.8011"},"MODEL_NAME":"M558-G1","API_VERSION":"1.0.13_1.0.13.29_1949_0001","model":"M558-G1","modelName":"M558-G1","modelResolution":2,"modelSeries":"M","vendor":"Sigma","firmwareVersion":"6.0.11.1","scplVersion":[1949,1],"modelType":4}'''
+        device_context_json_str = '''{"SYSTEM_INFO":{"SUBSERIES":"M8","SOC":0,"SERIES":"M","MODEL_RESOLUTION":2,"DIID":"9d021e22-c237-4253-asdf-ccbb1234567c","VERSION":"6.0.11.1","DEVICE_TYPE":0,"CHIPSET":2,"MODEL_TYPE":4,"PANEL_TYPE":0,"TVAD_ID":{"LMT":0,"IFA":"aa84c930-asdf-asdf-8cc0-123b55b2ff07","IFA_TYPE":"dpid"},"MODEL_NAME":"M558-G1","SIZE":558},"CAPABILITIES":{"FRC":False,"USB_POWER":True,"ABC":True,"HDR":[0,1,2,3],"MEMC":False,"BATTERY":False,"type":"tvtuner","ACCESSIBILITY":{"TTS":True,"ZOOMMODE":True},"memc":0,"BLE":False,"TUNER":True,"ENERGY_STAR":False,"BACKLIGHT":False},"SC_INFO":"HOME-TEST v53.8","BINARIES":{"CONJURE":"SX7B-3.0.315.0","AIRPLAY":"0.0.4644","COBALT":"0.19.8011"},"MODEL_NAME":"M558-G1","API_VERSION":"1.0.13_1.0.13.29_1949_0001","model":"M558-G1","modelName":"M558-G1","modelResolution":2,"modelSeries":"M","vendor":"Sigma","firmwareVersion":"6.0.11.1","scplVersion":[1949,1],"modelType":4}'''
+        # device_context_json = json.loads(device_context_json_orig_str)
+        # device_context_json_str = json.dumps(device_context_json)
         epoch_time = int(time.time())
-
+        #ToDo:
         header_str = '''
         {
             "Content-Type": "application/json",
@@ -28,13 +34,34 @@ class Const:
             "CountryIso2Code": "US",
             "ClientDateTimeSeconds": %d,
             "SctvVersion": "5.0.0.0",
-            "ModelName": "E50-F2"  
-        }''' % epoch_time
-        #ToDo: "ModelName": "E50-F2" # is this needed
+            "ModelName": "E50-F2"
+        }''' % (epoch_time)
+        #ToDo:
+        # header_str = '''
+        #  {
+        #      "Content-Type": "application/json",
+        #      "LanguageIso2Code": "EN",
+        #      "CountryIso2Code": "US",
+        #      "ClientDateTimeSeconds": %d,
+        #      "SctvVersion": "5.0.0.0",
+        #      "ModelName": "E50-F2",
+        #      "device-context": '%s'
+        #  }''' % (epoch_time, device_context_json_str)
+        # print('header_str=', header_str)
+        #ToDo ^: "ModelName": "E50-F2" # is this needed
         headersdict = json.loads(header_str)
         return json.dumps(headersdict)
 
-class Catalog(object):    
+    @property
+    def CATALOG_URL(self):
+        return 'http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=100'
+
+    @property
+    def VUE_SERVICE_URL(self, CatalogId):
+        return 'http://api-stage.vizio.com/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":%d,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % catalogId
+
+
+class Catalog(object):
     def __init__(self,proto=None, host=None, uri=None, query_string=None, url=None):
         self.protocol = proto
         self.host = host
@@ -126,7 +153,7 @@ class Catalog(object):
         df = pd.DataFrame(data=catJsonObj['items'], index=dfRowIndex, columns=dfColIndex)
         #print('df=', df)
         df = df.loc[ df['id'].isin(row['items'])] # row['items'] example:[28269,28117,28119,28268,28124]
-        #print('df=', df)
+        #print('----------->>> df=', df)
 
         return row['id'], row['title'], row['items']
 
@@ -146,7 +173,7 @@ class Catalog(object):
         df = df.loc[df['id'].isin(row['items'])]  # row['items'] example:[28269,28117,28119,28268,28124]
         #print('df=', df)
         # item_details for item of iid_idx
-        print('row=', row['items'][iid_idx])
+        #print('row=', row['items'][iid_idx])
         series1 = df[df['id'] == row['items'][iid_idx]]  # get item details of iid (example: 28117)
         # series1 is like a dictionary
         the_json = series1.to_json(orient='columns')
@@ -176,28 +203,28 @@ class Catalog(object):
             print(df)
 
     @staticmethod
-    def run_cat_rows():
+    def run_cat_rows(host='catalog-dev.smartcasttv.com', catalogId=CatalogEnum.HOME.value):
         #curl -i -X POST -H 'Content-Type: application/json' -H 'LanguageIso2Code: EN' -H 'CountryIso2Code: US' -H 'ClientDateTimeSeconds: 1588700639' -H 'SctvVersion: 5.0.0.0' -H 'ModelName: E50-F2' -d '{ "Catalogs":[{ "Id" : 1 }]}' http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=3
-        url = 'http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=3'
+        url = 'http://%s/catalogs?rowsToExpand=100' % host
         cat = Catalog()
-        cat_url, catJsonObj = cat.getJsonFromCatalogUrl(catalogId=CatalogEnum.HOME.value, url=url)
-        catalog_id, catalog_title, row_list = Catalog().getCatalogRowIdList(cat_url)
+        cat_url, catJsonObj = cat.getJsonFromCatalogUrl(catalogId=catalogId, url=url)
+        catalog_id, catalog_title, row_list = Catalog().getCatalogRowIdList(cat_url, catalogId=catalogId, outfile='output/catalog.json')
         return catalog_id, catalog_title, row_list
 
     @staticmethod
-    def run_cat_home_iids(row_index=0):
+    def run_cat_home_iids(catalogId=CatalogEnum.HOME.value,row_index=0):
         proto, host, uri, qs, url = get_command_line_args()
         cat = Catalog(proto, host, uri, qs)
-        url, jsonobj  = cat.getJsonFromCatalogUrl(url=None)
+        url, jsonobj  = cat.getJsonFromCatalogUrl(catalogId=catalogId,url=None)
 
         catalog_id, catalog_title, rows = cat.getRowDetailsByIndex(jsonobj, row_index=row_index)
         return catalog_id, catalog_title, rows
 
     @staticmethod
-    def run_cat_home_row_item(row_index=0, item_index=0):
+    def run_cat_home_row_item(catalogId=CatalogEnum.HOME.value,row_index=0, item_index=0):
         proto, host, uri, qs, url = get_command_line_args()
         cat = Catalog(proto, host, uri, qs)
-        url, jsonobj  = cat.getJsonFromCatalogUrl(url=None)
+        url, jsonobj  = cat.getJsonFromCatalogUrl(catalogId=catalogId,url=None)
         dict1 = cat.getRowItemDetails(jsonobj, row_index=0, iid_idx=item_index)
         print('title=%s, id=%s, subTitle=%s, imagePath=%s, \n\n action=%s, metadata=%s' %
               (dict1['title'], dict1['id'], dict1['subtitle'], dict1['imagePath'], dict1['action'], dict1['metadata']))
@@ -223,7 +250,25 @@ def get_command_line_args():
     args = parser.parse_args()
     return args.protocol, args.host, args.uri, args.qs, args.url
 if __name__ == '__main__':
-    catalog_id, catalog_title, row_list = Catalog().run_cat_rows()
+    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.HOME.value)
+    print(row_list)
     catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=0)
     catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=1)
     dict1 = Catalog().run_cat_home_row_item(row_index=0, item_index=0) # item_index = 0 not found?
+    print('CatalogId=2')
+    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.SHOWS.value)
+    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
+    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(catalogId=CatalogEnum.SHOWS.value,row_index=0)
+    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(catalogId=CatalogEnum.SHOWS.value,row_index=1)
+
+    print('CatalogId=3')
+    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.MOVIES.value)
+    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
+
+    print('CatalogId=4')
+    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.LEARN.value)
+    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
+
+    print('CatalogId=SEARCH')
+    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.SEARCH.value)
+    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))

@@ -18,7 +18,8 @@ class EzLogger(object):
         handler.setFormatter(formatter)
         
         logger.addHandler(handler)  # logging to file
-        logger.addHandler(logging.StreamHandler(sys.stdout))  # logging to stdout
+        #logger.addHandler(logging.StreamHandler(sys.stdout))  # logging to stdout
+
         return logger
 
 if __name__ == '__main__':

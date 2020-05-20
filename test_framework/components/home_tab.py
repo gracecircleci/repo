@@ -8,14 +8,16 @@ from pandas import json_normalize
 from util.urlutils import EzUtil
 from util.logging import EzLogger
 from util.datautils import DataUtil
+from components.catalog import CatalogEnum, Const
 
 class HomeTab(object):
 
-    def __init__(self, proto=None, host=None, uri=None, query_string=None):
+    def __init__(self, proto=None, host=None, uri=None, query_string=None, url=None):
         self.protocol = proto
         self.host = host
         self.uri = uri
         self.qs = query_string
+        self.url = url
         self.logger = EzLogger.getLogger(__file__)
 
         self.dataframe = None
@@ -57,9 +59,11 @@ class HomeTab(object):
         assert self.dataframe.columns is not None
         #  write df columns to a file for debugging purpose
         DataUtil().writeDataColumnNamesToFile(self.dataframe, outfile='output/home_columns.txt')
-        return self.dataframe 
+        return self.dataframe
 
-    def getFirstRowFromVueService(self, jsonobj, items_pos= 0, item_id=1300, the_vid=92):
+    #def getFirstRowFromVueService(self, jsonobj, items_pos=0, item_id=1300, the_vid=92):
+
+    def getFirstRowFromVueService(self, jsonobj, items_pos=None, item_id=None, the_vid=None):
         '''
         From the jsonobj that we get from the http GET response
         :param jsonobj: the jsonobj that we get from the http GET response
@@ -78,17 +82,13 @@ class HomeTab(object):
 
         the_record_path = ['Frame', 'Data', 'Items', 'Frame','Data','SummaryItems']
         dflevel2 = json_normalize(data=jsonobj['Value'][0], record_path=the_record_path, max_level=8)
-        #print('dfelevel2 columns=', dflevel2.columns)
+        print('dfelevel2 columns=', dflevel2.columns)
 
         # only interested in the column 'Vibe.Root.Iid' where 'Vid'==92
         dflevel3 = dflevel2.reindex(columns=['Vid', 'Vibe.Root.Iid', 'Frame.Data.Title', 'Frame.Data.SubTitles'])
-        # print('==============>>>>>')
-        # print(dflevel3)
-        #print('================================')
+        #print(dflevel3)
         dflevel4 = dflevel3[dflevel3['Vid']==the_vid]
-        # print('===========dflevel4==========')
-        # print(dflevel4)
-        # print('===========dflevel4==========')
+        print(dflevel4)
         dflevel5 = dflevel4.reindex(columns=['Vibe.Root.Iid'])
         iid_list = iid_list = [x for b in dflevel5.values for x in b ]
 
@@ -109,7 +109,7 @@ class HomeTab(object):
         df2 = top_df.reindex(columns=columns )
         print(df2)
 
-    def visit_hometab_and_verify_fields(self, record_path=[], wanted_columns=[]):
+    def visit_hometab_and_verify_fields(self, url=None, record_path=[], wanted_columns=[]):
         # check input param columns is not empty
         assert record_path != [] and wanted_columns != []
 
@@ -124,24 +124,25 @@ class HomeTab(object):
 
         # check the required fields or columns are not null
         total_nulls = DataUtil().checkRequiredFieldsNotNull(df)
-        print('total_nulls=', total_nulls)
-        print('type(total_nulls)=', total_nulls)
+        # print('total_nulls=', total_nulls)
+        # print('type(total_nulls)=', total_nulls)
         # the required fields value cannot be null, so total_nulls should be 0
         assert (total_nulls == 0) 
         return total_nulls
 
     @staticmethod
-    def runVueServiceRowsIid():
-        url = 'http://api-stage.vizio.com/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":1,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE='
+    def runVueServiceRowsIid(host='api-stage.vizio.com',catalogId=CatalogEnum.HOME.value):
+        url = 'http://%s/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":%s,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % (host,catalogId)
         vue_url, vueJsonObj = HomeTab().getJsonFromHomeUrl(url)
         vue_title, vue_rows = HomeTab().getRowsIid(vueJsonObj)
         return vue_title, vue_rows
 
     @staticmethod
-    def runVueServiceFirstRow(item_pos=0, item_id=1300, the_vid=92):
-        proto, host, uri, qstr = get_command_line_args()
-        homeObj = HomeTab(proto, host, uri, qstr)
-        url, jsonObj = homeObj.getJsonFromHomeUrl()  # construct url from proto,host, uri,qstr
+    def runVueServiceFirstRow(catalogId=CatalogEnum.HOME.value, item_pos=0, item_id=1300, the_vid=92):
+        proto, host, uri, qstr, url = get_command_line_args()
+        url = 'http://api-stage.vizio.com/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":%s,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % catalogId
+        homeObj = HomeTab(proto, host, uri, qstr, url)
+        url, jsonObj = homeObj.getJsonFromHomeUrl(url)  # construct url from proto,host, uri,qstr
         title, row_item_title, iid_list = homeObj.getFirstRowFromVueService(
             jsonObj, items_pos=item_pos, item_id=item_id, the_vid=the_vid )
         return title, row_item_title, iid_list
@@ -158,19 +159,31 @@ def get_command_line_args():
     parser.add_argument('--qs', 
         default='contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=%5b%7b%22Vibe%22:%7b%22Sid%22:3020009,%22Iid%22:1,%22_tid%22:18%7d,%22Vid%22:2000002,%22Expand%22:2,%22_tid%22:14%7d%5d&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=', 
         help='query_sting eg: clientTypeId=2000001&appTypeId=2000001&_url=')
+    parser.add_argument('--url', default='',help='url')
 
     args = parser.parse_args()
-    return args.protocol, args.host, args.uri, args.qs
+    return args.protocol, args.host, args.uri, args.qs, args.url
 
 
 if __name__ == '__main__':
-    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=0, item_id=1300, the_vid=92)
-    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=1, item_id=1301, the_vid=2000013)
-    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=2, item_id=9, the_vid=2000015)
-    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=3, item_id=1537, the_vid=2000010)
-    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(item_pos=3, item_id=1517, the_vid=2000009)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.HOME.value,item_pos=0, item_id=1300, the_vid=92)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.HOME.value,item_pos=1, item_id=1301, the_vid=2000013)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.HOME.value,item_pos=2, item_id=9, the_vid=2000015)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.HOME.value,item_pos=3, item_id=1537, the_vid=2000010)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.HOME.value,item_pos=3, item_id=1517, the_vid=2000009)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.SHOWS.value,item_pos=0, item_id=1305, the_vid=92)
+    print('title=',title, 'row_item_titl=', row_item_title, 'iid_list=', iid_list)
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.SHOWS.value,item_pos=0, item_id=1305, the_vid=92)
+    print('title=',title, 'row_item_titl=', row_item_title, 'iid_list=', iid_list)
+    print('-------')
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.SHOWS.value,item_pos=1, item_id=1251, the_vid=2000010)
+    print('title=',title, 'row_item_titl=', row_item_title, 'iid_list=', iid_list)
+    print('-------')
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.SHOWS.value,item_pos=2, item_id=1443, the_vid=2000006) #2000009
+    print('title=',title, 'row_item_titl=', row_item_title, 'iid_list=', iid_list)
 
-
+    title, row_item_title, iid_list = HomeTab().runVueServiceFirstRow(catalogId=CatalogEnum.SHOWS.value,item_pos=3, item_id=1605, the_vid=2000006) #2000009
+    print('title=',title, 'row_item_titl=', row_item_title, 'iid_list=', iid_list)
 
 
     
