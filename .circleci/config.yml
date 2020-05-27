@@ -21,7 +21,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             mkdir -p ./gtest_results
             ls ./gtest_results
-            python -m xmlrunner test.test_catalog -o gtest_results
+            python3 test/test_catalog.py catalog-dev.smartcasttv.com api-stage.vizio.com -v >> ./gtest_results/catalog_comparison_test_$DATE.log 2>&1
       - store_test_results:
             path: test_framework/gtest_results
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
