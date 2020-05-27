@@ -1,4 +1,5 @@
-from pyunitreport import HTMLTestRunner
+#from pyunitreport import HTMLTestRunner
+import xmlrunner
 import unittest
 import json, sys
 import logging
@@ -687,6 +688,12 @@ if __name__ == '__main__':
     # popping the parameters is a must.
     for i in range(len(sys.argv[1:])):
         sys.argv.pop()
+
+    filedir = '../gtest_results'
+    filepath = '%s/test_catalog_reports' % filedir
+    # unittest.main(verbosity=2,
+    #     testRunner=HTMLTestRunner(output='./gtest_results'))
     unittest.main(verbosity=2,
-        testRunner=HTMLTestRunner(output='./gtest_results'))
+        testRunner=xmlrunner.XMLTestRunner(output=filedir),
+        failfast=False, buffer=False, catchbreak=False)
 
