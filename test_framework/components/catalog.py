@@ -75,8 +75,7 @@ class Catalog(object):
         if url is None:
             url = EzUtil.constructUrl(protocol=self.protocol, host=self.host, uri=self.uri, qstring=self.qs)
         assert url
-
-        outfile = 'output/catqlog.json'
+        outfile = 'output/catalog_%s.json' % CatalogEnum(catalogId)
         payload_str = '{ "Catalogs":[{ "Id" : %d }]}' % catalogId
         data = json.loads(payload_str)
         headersdict = json.loads(Const().HEADERS)
@@ -119,6 +118,9 @@ class Catalog(object):
     def getCatalogRows(self, catJsonObj):
         self.logger.info('catalog_rows=%s' % catJsonObj['catalogs'][0]['rows'])
         return catJsonObj['catalogs'][0]['rows']
+
+    def getCatalogRowsTitles(self, catJsonObj):
+        pass
    
     def getItems(self,catJsonObj):
         return catJsonObj['catalogs'][0]['items']
@@ -128,7 +130,8 @@ class Catalog(object):
         headers = json.loads(Const().HEADERS)
         payload_str = '{ "Catalogs":[{ "Id" : %d }]}' % catalogId
         data = json.loads(payload_str)
-    
+
+        outfile = 'output/catalog_%s.json' % CatalogEnum(catalogId)
         status, url, jsonobj = EzUtil().urlToJsonWithPost(url=url, data_dict=data, hds_dict=headers, outfile=outfile)
         self.logger.info('making http POST request. url=%s' % unquote(url))
         self.logger.info('http HEADERS %s. http payload %s' % (headers, payload_str ))
@@ -156,6 +159,33 @@ class Catalog(object):
         #print('----------->>> df=', df)
 
         return row['id'], row['title'], row['items']
+
+    def getCatalogRowsCount(self, catJsonObj, catalogId):
+        catalogTitle = self.getCatalogTitle(catJsonObj) # cat title
+        catalogId = self.getCatalogId(catJsonObj)
+        rows = catJsonObj['rows']
+        dfRowIndex = None
+        # ['id', 'title', 'subTitle', 'action', 'metadata', 'imagePath']
+        dfColIndex = ['id', 'title']
+        df = pd.DataFrame(data=rows,index=dfRowIndex, columns=dfColIndex)
+        dict1 = df.to_dict()
+        iids = dict1['id'].values()
+        titles = dict1['title'].values()
+        iid_title_dict = dict(zip(iids, titles))
+        rows_count = len(iid_title_dict)
+        return iid_title_dict, rows_count
+
+    def getRowItemDetailsByIid(self, catJsonObj, iid=None):
+        catalogTitle = self.getCatalogTitle(catJsonObj) # cat title
+        catalogId = self.getCatalogId(catJsonObj)
+        rows = catJsonObj['rows']
+        dfRowIndex = None
+        # ['id', 'title', 'subTitle', 'action', 'metadata', 'imagePath']
+        dfColIndex = ['id', 'title', 'subTitle', 'action']
+        df = pd.DataFrame(data=rows,index=dfRowIndex, columns=dfColIndex)
+        df_one = df.loc[df['id']==iid]
+        ret_id, ret_title = df_one.iloc[-1]['id'], df_one.iloc[-1]['title']
+        return ret_id, ret_title
 
     def getRowItemDetails(self, catJsonObj, row_index=0, cols=['id', 'title', 'subTitle', 'action'], iid_idx=0):
         assert catJsonObj is not None
@@ -207,10 +237,22 @@ class Catalog(object):
         #curl -i -X POST -H 'Content-Type: application/json' -H 'LanguageIso2Code: EN' -H 'CountryIso2Code: US' -H 'ClientDateTimeSeconds: 1588700639' -H 'SctvVersion: 5.0.0.0' -H 'ModelName: E50-F2' -d '{ "Catalogs":[{ "Id" : 1 }]}' http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=3
         url = 'http://%s/catalogs?rowsToExpand=100' % host
         cat = Catalog()
+        outfile = 'output/catalog_%s.json' % CatalogEnum(catalogId)
         cat_url, catJsonObj = cat.getJsonFromCatalogUrl(catalogId=catalogId, url=url)
         catalog_id, catalog_title, row_list = Catalog().getCatalogRowIdList(cat_url, catalogId=catalogId, outfile='output/catalog.json')
         return catalog_id, catalog_title, row_list
 
+    @staticmethod
+    def run_cat_row_count(host='catalog-dev.smartcasttv.com', catalogId=CatalogEnum.HOME.value):
+        #curl -i -X POST -H 'Content-Type: application/json' -H 'LanguageIso2Code: EN' -H 'CountryIso2Code: US' -H 'ClientDateTimeSeconds: 1588700639' -H 'SctvVersion: 5.0.0.0' -H 'ModelName: E50-F2' -d '{ "Catalogs":[{ "Id" : 1 }]}' http://catalog-dev.smartcasttv.com/catalogs?rowsToExpand=3
+        url = 'http://%s/catalogs?rowsToExpand=100' % host
+        cat = Catalog()
+        outfile = 'output/catalog_%s.json' % CatalogEnum(catalogId)
+        cat_url, catJsonObj = cat.getJsonFromCatalogUrl(catalogId=catalogId, url=url)
+        iid_title_dict = cat.getCatalogRowsCount(catJsonObj=catJsonObj, catalogId=catalogId)
+
+
+        return iid_title_dict, row_count
     @staticmethod
     def run_cat_home_iids(catalogId=CatalogEnum.HOME.value,row_index=0):
         proto, host, uri, qs, url = get_command_line_args()
@@ -250,25 +292,31 @@ def get_command_line_args():
     args = parser.parse_args()
     return args.protocol, args.host, args.uri, args.qs, args.url
 if __name__ == '__main__':
-    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.HOME.value)
-    print(row_list)
-    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=0)
-    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=1)
-    dict1 = Catalog().run_cat_home_row_item(row_index=0, item_index=0) # item_index = 0 not found?
-    print('CatalogId=2')
-    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.SHOWS.value)
-    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
-    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(catalogId=CatalogEnum.SHOWS.value,row_index=0)
-    catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(catalogId=CatalogEnum.SHOWS.value,row_index=1)
-
-    print('CatalogId=3')
-    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.MOVIES.value)
-    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
-
-    print('CatalogId=4')
-    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.LEARN.value)
-    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
-
-    print('CatalogId=SEARCH')
-    catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.SEARCH.value)
-    print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
+    # catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.HOME.value)
+    # print(row_list)
+    # catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=0)
+    # catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(row_index=1)
+    # dict1 = Catalog().run_cat_home_row_item(row_index=0, item_index=0) # item_index = 0 not found?
+    # print('CatalogId=2')
+    # catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.SHOWS.value)
+    # print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
+    # catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(catalogId=CatalogEnum.SHOWS.value,row_index=0)
+    # catalog_id, catalog_title, rows = Catalog().run_cat_home_iids(catalogId=CatalogEnum.SHOWS.value,row_index=1)
+    #
+    iid_title_dict, row_count = Catalog().run_cat_row_count(host='catalog-dev.smartcasttv.com', catalogId=CatalogEnum.HOME.value)
+    print('catalogId: %s, row_count=%s' % (CatalogEnum(CatalogEnum.HOME.value), row_count))
+    iid_title_dict, row_count = Catalog().run_cat_row_count(host='catalog-dev.smartcasttv.com', catalogId=CatalogEnum.MOVIES.value)
+    print('catalogId: %s, row_count=%s' % (CatalogEnum(CatalogEnum.MOVIES.value), row_count))
+    iid_title_dict, row_count = Catalog().run_cat_row_count(host='catalog-dev.smartcasttv.com', catalogId=CatalogEnum.SHOWS.value)
+    print('catalogId: %s, row_count=%s' % (CatalogEnum(CatalogEnum.SHOWS.value), row_count))
+    # print('CatalogId=3')
+    # catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.MOVIES.value)
+    # print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
+    #
+    # print('CatalogId=4')
+    # catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.LEARN.value)
+    # print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
+    #
+    # print('CatalogId=SEARCH')
+    # catalog_id, catalog_title, row_list = Catalog().run_cat_rows(catalogId=CatalogEnum.SEARCH.value)
+    # print('catalog_id=%s, catalog_title=%s, row_list=%s' % (catalog_id, catalog_title, row_list))
