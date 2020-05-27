@@ -681,18 +681,16 @@ class CatalogTest(unittest.TestCase):
 if __name__ == '__main__':
     # ToRun: python3 test/test_catalog.py <catalog-host> <vue_host>
     # python3 test/test_catalog.py catalog-dev.smartcasttv.com api-stage.vizio.com -v
-    assert (len(sys.argv) >=3)
-    CatalogCommon.CATALOG_HOST = sys.argv[1] if sys.argv[1] else TestEnvDefault.CATALOG_HOST
-    CatalogCommon.VUE_HOST = sys.argv[2] if sys.argv[2] else TestEnvDefault.VUE_HOST
-
-    # popping the parameters is a must.
-    for i in range(len(sys.argv[1:])):
-        sys.argv.pop()
+    # assert (len(sys.argv) >=3)
+    # CatalogCommon.CATALOG_HOST = sys.argv[1] if sys.argv[1] else TestEnvDefault.CATALOG_HOST
+    # CatalogCommon.VUE_HOST = sys.argv[2] if sys.argv[2] else TestEnvDefault.VUE_HOST
+    #
+    # # popping the parameters is a must.
+    # for i in range(len(sys.argv[1:])):
+    #     sys.argv.pop()
 
     filedir = '../gtest_results'
     filepath = '%s/test_catalog_reports' % filedir
-    # unittest.main(verbosity=2,
-    #     testRunner=HTMLTestRunner(output='./gtest_results'))
     unittest.main(verbosity=2,
         testRunner=xmlrunner.XMLTestRunner(output=filedir),
         failfast=False, buffer=False, catchbreak=False)

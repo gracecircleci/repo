@@ -151,7 +151,8 @@ class HomeTab(object):
 
     @staticmethod
     def runVueServiceFirstRow(catalogId=CatalogEnum.HOME.value, item_pos=0, item_id=1300, the_vid=92):
-        proto, host, uri, qstr, url = get_command_line_args()
+        #proto, host, uri, qstr, url = get_command_line_args()
+        proto, host, uri, qstr = None, None, None, None
         url = 'http://api-stage.vizio.com/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":%s,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % catalogId
         homeObj = HomeTab(proto, host, uri, qstr, url)
         url, jsonObj = homeObj.getJsonFromHomeUrl(url, catalogId=catalogId)  # construct url from proto,host, uri,qstr
@@ -161,7 +162,7 @@ class HomeTab(object):
 
     @staticmethod
     def runVueServiceRowTitles(catalogId=CatalogEnum.HOME.value, item_pos=0, item_id=1300):
-        proto, host, uri, qstr, url = get_command_line_args()
+        proto, host, uri, qstr = None, None, None, None 
         url = 'http://api-stage.vizio.com/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":%s,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % catalogId
         homeObj = HomeTab(proto, host, uri, qstr, url)
         url, jsonObj = homeObj.getJsonFromHomeUrl(url, catalogId=catalogId)
@@ -170,7 +171,7 @@ class HomeTab(object):
 
     @staticmethod
     def runVueServiceRowTitleByIid(catalogId=CatalogEnum.HOME.value, iid=1300):
-        proto, host, uri, qstr, url = get_command_line_args()
+        proto, host, uri, qstr = None, None, None, None 
         url = 'http://api-stage.vizio.com/api/1.0.1.0/vibes/getdata.aspx?contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903&handles=[{"Vibe":{"Sid":3020009,"Iid":%s,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % catalogId
         homeObj = HomeTab(proto, host, uri, qstr, url)
         url, jsonObj = homeObj.getJsonFromHomeUrl(url, catalogId=catalogId)
