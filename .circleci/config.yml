@@ -1,16 +1,8 @@
 version: 2.1
-nightly:
-  triggers:
-    - schedule:
-        cron: "*/5 * * * *"
-        filters:
-          branches:
-            only:
-              - master
 jobs:
   build:
     working_directory: ~/1CircleCI/repo
-    docker: 
+    docker:
       - image: circleci/python:3.7-node # the primary container
     steps:
       - checkout # check out the code in the project directory
@@ -35,3 +27,19 @@ jobs:
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test_framework/gtest_results 
           destination: tr1
+
+workflows:
+  version: 2.1
+  commit-workflow:
+    jobs:
+      - build
+  schedule-workflow:
+    triggers:
+      - schedule:
+          cron: "*/5 * * * *"
+            filters:
+              branches:
+                only:
+                  - master
+    jobs:
+      - build
