@@ -689,8 +689,8 @@ if __name__ == '__main__':
     # for i in range(len(sys.argv[1:])):
     #     sys.argv.pop()
 
-    filedir = '../gtest_results'
-    filepath = '%s/test_catalog_reports' % filedir
+
+    filepath = '.'
     unittest.main(verbosity=2,
-        testRunner=HTMLTestRunner(output=filedir))
+        testRunner=HTMLTestRunner(output=filepath))
 
