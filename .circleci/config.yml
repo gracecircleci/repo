@@ -22,6 +22,14 @@ jobs:
             mkdir -p ./gtest_results
             ls ./gtest_results
             python3 -m xmlrunner test.test_catalog -o gtest_results
+      - run:
+          name: "test_catalog2.py html output"
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            mkdir -p ./gtest_results
+            ls ./gtest_results
+            python3 test/test_catalog2.py
       - store_test_results:
             path: test_framework/gtest_results
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
