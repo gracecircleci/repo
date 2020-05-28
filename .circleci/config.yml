@@ -1,4 +1,12 @@
 version: 2.1
+nightly:
+  triggers:
+    - schedule:
+        cron: "10 * * * *"
+        filters:
+          branches:
+            only:
+              - master
 jobs:
   build:
     working_directory: ~/1CircleCI/repo
