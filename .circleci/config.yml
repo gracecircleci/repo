@@ -29,14 +29,14 @@ jobs:
           destination: tr1
 
 workflows:
-  version: 2.1
+  version: 2
   commit-workflow:
     jobs:
       - build
   schedule-workflow:
     triggers:
       - schedule:
-          cron: "*/5 * * * *"
+          cron: "45 * * * *"
           filters:
             branches:
               only:
