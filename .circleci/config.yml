@@ -23,11 +23,11 @@ jobs:
             ls ./reports
             python -m xmlrunner test.test_catalog -o reports
       - run:
-          name: "test_catalog2.py html format"
+          name: "test_item_details.py html format"
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
-            python test/test_catalog2.py -v
+            python test/test_item_details.py -v
       - store_test_results:
             path: test_framework/reports
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
