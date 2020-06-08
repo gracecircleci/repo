@@ -15,14 +15,6 @@ jobs:
             sudo pip install unittest-xml-reporting
             pipenv install
       - run:
-          name: "test_catalog.py "
-          command: |
-            cd test_framework
-            export PYTHONPATH=$PYTHONPATH:.
-            mkdir -p ./reports
-            ls ./reports
-            python -m xmlrunner test.test_catalog -o reports
-      - run:
           name: "test_item_details.py html format"
           command: |
             cd test_framework
