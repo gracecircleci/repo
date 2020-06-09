@@ -349,7 +349,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(catalog_title, vue_title,
                          '\n Diffs ==>> catalog_title=%s, vue_title=%s' % (catalog_title, vue_title))
 
-    def test_catalog_shows_rowcount(self):
+    def xtest_catalog_shows_rowcount(self):
         _, catalog_rows, _, vue_rows = CatalogCommon.catalog_rows(host=CatalogCommon.VUE_HOST,catalogId=CatalogEnum.SHOWS.value)
         print('[%s]' % (sys._getframe().f_code.co_name))
         print('catalog_rows=%s. vue_rows=%s' % (catalog_rows, vue_rows ))
@@ -505,7 +505,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(catalog_row_title, vue_row_title,
                          '\n Diffs ==>> catalog_title=%s, vue_item_title=%s' % (catalog_row_title, vue_row_title))
 
-    def test_shows_row_1216_title(self):
+    def xtest_shows_row_1216_title(self):
         catalog_row_title, vue_row_title, iid, cat_row_count, vue_row_count = CatalogCommon.row_iid_title(
             cat_url=CatalogCommon.CATALOG_URL,
             vue_url=CatalogCommon.VUE_SERVICE_SHOW_URL,
@@ -688,8 +688,6 @@ if __name__ == '__main__':
         sys.argv.pop()
 
     # ToRun: python3 -m unittest test.test_catalog -o gtest_results
-    filedir = '../gtest_results'
-    filepath = '%s/test_catalog_reports' % filedir
     unittest.main(verbosity=2,
-        testRunner=HTMLTestRunner(output='/Users/gracetzay/Vizio/gtest_repo/test_framework/test_output_dir'))
+        testRunner=HTMLTestRunner(output='./reports'))
 

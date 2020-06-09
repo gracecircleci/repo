@@ -14,7 +14,6 @@ jobs:
             sudo pip install PyUnitReport
             sudo pip install unittest-xml-reporting
             pipenv install
-      - run: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3  # must pass to proceed
       - run:
           name: "test_item_details.py "
           halt_build_on_fail: false
