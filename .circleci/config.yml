@@ -15,12 +15,14 @@ jobs:
             sudo pip install unittest-xml-reporting
             pipenv install
       - run:
+          halt_build_on_fail: false  # default true
           name: "test_item_details.py "
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
             python test/test_item_details.py -v
       - run:
+          halt_build_on_fail: false  # default true
           name: "test_catalog.py "
           command: |
             echo 'running test_catalog.py...'
