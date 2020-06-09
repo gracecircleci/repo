@@ -1,5 +1,4 @@
-#from pyunitreport import HTMLTestRunner
-import xmlrunner
+from pyunitreport import HTMLTestRunner
 import unittest
 import json, sys
 import logging
@@ -304,7 +303,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(len(catalog_row_iids), len(vue_iid_list),
                          'only_in_catalog_iid_list=%s, only_in_vue_iid_list=%s' % (extra_in_catalog, extra_in_vue) )
 
-    #@unittest.skip('Skip this test')
+    @unittest.skip('Skip this test')
     def test_catalog_home_row_9_length(self):
         catalog_row_title, catalog_row_iids, vue_item_title, vue_iid_list = CatalogCommon.home_row_iids(
             catalogId=CatalogCommon.CATALOG_ID,the_row_index=2, iid=9, the_vid=2000015)
@@ -416,7 +415,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(catalog_row_title, vue_row_title,
                          '\n Diffs ==>> catalog_title=%s, vue_item_title=%s' % (catalog_row_title, vue_row_title))
 
-    def test_shows_row_1203_title(self):
+    def xtest_shows_row_1203_title(self):
         catalog_row_title, vue_row_title, iid, cat_row_count, vue_row_count = CatalogCommon.row_iid_title(
             cat_url=CatalogCommon.CATALOG_URL,
             vue_url=CatalogCommon.VUE_SERVICE_SHOW_URL,
@@ -595,7 +594,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(catalog_row_title, vue_row_title,
                          '\n Diffs ==>> catalog_title=%s, vue_item_title=%s' % (catalog_row_title, vue_row_title))
 
-    def test_movie_row_1594_title(self):
+    def xtest_movie_row_1594_title(self):
         catalog_row_title, vue_row_title, iid, cat_row_count, vue_row_count = CatalogCommon.row_iid_title(
             cat_url=CatalogCommon.CATALOG_URL,
             vue_url=CatalogCommon.VUE_SERVICE_MOVIE_URL,
@@ -604,7 +603,7 @@ class CatalogTest(unittest.TestCase):
         print('iid=%s, catalogService title=%s, VueService title=%s' % (iid, catalog_row_title, vue_row_title))
         self.assertEqual(catalog_row_title, vue_row_title,
                          '\n Diffs ==>> catalog_title=%s, vue_item_title=%s' % (catalog_row_title, vue_row_title))
-    def test_movie_row_1098_title(self):
+    def xtest_movie_row_1098_title(self):
         catalog_row_title, vue_row_title, iid, cat_row_count, vue_row_count = CatalogCommon.row_iid_title(
             cat_url=CatalogCommon.CATALOG_URL,
             vue_url=CatalogCommon.VUE_SERVICE_MOVIE_URL,
@@ -680,18 +679,17 @@ class CatalogTest(unittest.TestCase):
 
 if __name__ == '__main__':
     # ToRun: python3 test/test_catalog.py <catalog-host> <vue_host>
-    # python3 test/test_catalog.py catalog-dev.smartcasttv.com api-stage.vizio.com -v
-    # assert (len(sys.argv) >=3)
-    # CatalogCommon.CATALOG_HOST = sys.argv[1] if sys.argv[1] else TestEnvDefault.CATALOG_HOST
-    # CatalogCommon.VUE_HOST = sys.argv[2] if sys.argv[2] else TestEnvDefault.VUE_HOST
-    #
-    # # popping the parameters is a must.
-    # for i in range(len(sys.argv[1:])):
-    #     sys.argv.pop()
+    # python3 test/test_catalog.py catalog-dev.smartcasttv.com api-stage.vizio.com
+    CatalogCommon.CATALOG_HOST = TestEnvDefault.CATALOG_HOST
+    CatalogCommon.VUE_HOST = TestEnvDefault.VUE_HOST
 
-    filedir = '../reports'
+    # popping the parameters is a must.
+    for i in range(len(sys.argv[1:])):
+        sys.argv.pop()
+
+    # ToRun: python3 -m unittest test.test_catalog -o gtest_results
+    filedir = '../gtest_results'
     filepath = '%s/test_catalog_reports' % filedir
     unittest.main(verbosity=2,
-        testRunner=xmlrunner.XMLTestRunner(output=filedir),
-        failfast=False, buffer=False, catchbreak=False)
+        testRunner=HTMLTestRunner(output='/Users/gracetzay/Vizio/gtest_repo/test_framework/test_output_dir'))
 
