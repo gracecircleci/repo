@@ -621,7 +621,7 @@ class CatalogTest(unittest.TestCase):
         print('iid=%s, catalogService title=%s, VueService title=%s' % (iid, catalog_row_title, vue_row_title))
         self.assertEqual(catalog_row_title, vue_row_title,
                          '\n Diffs ==>> catalog_title=%s, vue_item_title=%s' % (catalog_row_title, vue_row_title))
-    def xtest_movie_row_1608_title(self):
+    def test_movie_row_1608_title(self):
         catalog_row_title, vue_row_title, iid, cat_row_count, vue_row_count = CatalogCommon.row_iid_title(
             cat_url=CatalogCommon.CATALOG_URL,
             vue_url=CatalogCommon.VUE_SERVICE_MOVIE_URL,
