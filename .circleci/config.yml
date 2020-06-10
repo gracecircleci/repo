@@ -23,7 +23,7 @@ jobs:
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
             python test/test_catalog.py
-        - run:
+      - run:
           name: "test_rows.py "
           halt_build_on_fail: false
           when: always
@@ -31,7 +31,7 @@ jobs:
             echo 'running test_rows.py...'
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
-            python test/test_rows.py
+            python test/test_rows.py -v
       - run:
           name: "test_item_details.py "
           halt_build_on_fail: false
