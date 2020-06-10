@@ -53,6 +53,12 @@ class CatSvcItemDetails(object):
         )
         return str1
 
+class CatalogRows(object):
+    def __init__(self, theJson):
+        self.theJson = theJson
+
+    def getRowsOnPage(self):
+        pass
 
 class CatalogSvcTestUtil(object):
     @staticmethod
@@ -107,6 +113,5 @@ class CatalogSvcTestUtil(object):
         df = pd.DataFrame(data=jsonobj['items'], index=None, columns=dfColIndex)
         target_df = df.loc[ df['id'] == target_item_iid]
         target_json_str = target_df.to_json(orient='records')
-        print('type target_json=', type(target_json_str))
         target_json = json.loads(target_json_str)
         return target_json[0]

@@ -12,7 +12,7 @@ from util.urlutils import EzUtil
 class TestSequense(unittest.TestCase):
     pass
 
-def the_test_generator(testname=None, a=0, b=0):
+def test_generator(testname=None, a=0, b=0):
     def test(self):
         self.assertEqual(a,b, 'TestFailed: test_name=%s, acutal=%s, expected=%s' % (testname, a, b))
     return test
@@ -76,53 +76,30 @@ def create_test_list(testlist=[], cat_url=CatalogCommon.CATALOG_URL,
 
     return testlist
 
-class TestItemDetails(unittest.TestCase):
-  def testone(self):
-    testlist1 = []
-    testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
-                                vue_url=CatalogCommon.VUE_SERVICE_URL,
-                                catalogId=CatalogEnum.HOME.value)
-    testlist1.extend(testlist)
-    #
-    # testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
-    #                             vue_url=CatalogCommon.VUE_SERVICE_MOVIE_URL,
-    #                             catalogId=CatalogEnum.MOVIES.value)
-    # testlist1.extend(testlist)
-    #
-    # testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
-    #                             vue_url=CatalogCommon.VUE_SERVICE_SHOW_URL,
-    #                             catalogId=CatalogEnum.SHOWS.value)
-    # testlist1.extend(testlist)
-
-    for t in testlist1:
-        print('test_name={0}, actual={1}, expected={2}'.format(t[0], t[1], t[2]))
-        testname, actual, expect = t[0], t[1], t[2]
-        test = the_test_generator(testname, actual, expect)
-        setattr(TestSequense, testname, test)
 
 if __name__ == '__main__':
 
-  # testlist1 = []
-  # testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
-  #                             vue_url=CatalogCommon.VUE_SERVICE_URL,
-  #                             catalogId=CatalogEnum.HOME.value)
-  # testlist1.extend(testlist)
-  #
-  # testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
-  #                             vue_url=CatalogCommon.VUE_SERVICE_MOVIE_URL,
-  #                             catalogId=CatalogEnum.MOVIES.value)
-  # testlist1.extend(testlist)
-  #
-  # testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
-  #                             vue_url=CatalogCommon.VUE_SERVICE_SHOW_URL,
-  #                             catalogId=CatalogEnum.SHOWS.value)
-  # testlist1.extend(testlist)
-  #
-  # for t in testlist1:
-  #       print('test_name={0}, actual={1}, expected={2}'.format(t[0], t[1], t[2]))
-  #       testname, actual, expect = t[0], t[1], t[2]
-  #       test = the_test_generator(testname, actual, expect)
-  #       setattr(TestSequense, testname, test)
+  testlist1 = []
+  testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
+                              vue_url=CatalogCommon.VUE_SERVICE_URL,
+                              catalogId=CatalogEnum.HOME.value)
+  testlist1.extend(testlist)
+
+  testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
+                              vue_url=CatalogCommon.VUE_SERVICE_MOVIE_URL,
+                              catalogId=CatalogEnum.MOVIES.value)
+  testlist1.extend(testlist)
+
+  testlist = create_test_list(testlist=testlist1, cat_url=CatalogCommon.CATALOG_URL,
+                              vue_url=CatalogCommon.VUE_SERVICE_SHOW_URL,
+                              catalogId=CatalogEnum.SHOWS.value)
+  testlist1.extend(testlist)
+
+  for t in testlist1:
+        print('test_name={0}, actual={1}, expected={2}'.format(t[0], t[1], t[2]))
+        testname, actual, expect = t[0], t[1], t[2]
+        test = test_generator(testname, actual, expect)
+        setattr(TestSequense, testname, test)
 
   unittest.main(verbosity=2,
                     testRunner=HTMLTestRunner(output='./reports'))

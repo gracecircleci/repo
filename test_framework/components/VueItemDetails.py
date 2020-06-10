@@ -4,9 +4,6 @@ from components.catalog import CatalogEnum, Const
 from components.home_tab import HomeTab
 from test.test_catalog import TestEnvDefault, CatalogCommon
 
-
-
-
 class VueSvcItemDetails(object):
     def __init__(self, itemDetailsJson):
         self.itemDetailsJson = itemDetailsJson
@@ -77,8 +74,6 @@ class VueSvcTestUtil(object):
     @staticmethod
     def getPageRows(jsonObj)->list:
         # example: [1300, 1301, 9, 1517 ]
-        page_rows_of_dict = []
-        host = jsonObj['Host']
         value0= jsonObj['Value'][0]
         page_rows = value0['Frame']['Data']['Items']
         iids = [ row['Vibe']['Iid'] for row in page_rows]
