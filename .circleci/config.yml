@@ -15,14 +15,11 @@ jobs:
             sudo pip install unittest-xml-reporting
             pipenv install
       - run:
-          name: "test_catalog.py "
-          halt_build_on_fail: false
-          when: always
+          name: "echo env var"
           command: |
-            echo 'running test_catalog.py...'
-            cd test_framework
-            export PYTHONPATH=$PYTHONPATH:.
-            python test/test_catalog.py
+            export VIZIO_TEST_ENV=dev
+            echo 'VIZIO_TEST_ENV is'
+            echo $VIZIO_TEST_ENV
       - run:
           name: "test_rows.py "
           halt_build_on_fail: false
@@ -31,6 +28,8 @@ jobs:
             echo 'running test_rows.py...'
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
+            export VIZIO_TEST_ENV=dev
+            echo 'VIZIO_TEST_ENV is'
             python test/test_rows.py -v
       - run:
           name: "test_item_details.py "
