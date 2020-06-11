@@ -20,6 +20,7 @@ jobs:
             export VIZIO_TEST_ENV=dev
             echo 'VIZIO_TEST_ENV is'
             echo $VIZIO_TEST_ENV
+            python test/test_env.py -v
       - run:
           name: "test_rows.py "
           halt_build_on_fail: false
