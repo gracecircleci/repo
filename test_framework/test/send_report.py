@@ -61,9 +61,7 @@ def send_attachment(outfile='test_results'):
     if not os.path.isfile(htmlpath):
         print('====>>> No such file %s' % htmlpath)
     mfrom = 'notifications@smartcasttv.com'
-    mto = ['<grace.tzay@globant.com>', '<abhishek.shrivastava@vizio.com>', '<connor.freitas@vizio.com>',
-           'narendra.chandel@vizio.com','ramana.Iyer@vizio.com','sharief.youssef@vizio.com'
-           ]
+    mto = ['<gracetestsense@gmail.com>']
     subject = 'Test Results: %s_%s' % (outfile,htmltime)
     text = 'result attached.'
     send_mail(mfrom, mto, subject, text, files=[outfile, htmlpath])
