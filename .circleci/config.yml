@@ -15,16 +15,6 @@ jobs:
             sudo pip install unittest-xml-reporting
             pipenv install
       - run:
-          name: "echo env var"
-          command: |
-            echo 'test_env'
-            cd test_framework
-            export PYTHONPATH=$PYTHONPATH:.
-            export VIZIO_TEST_ENV=dev
-            echo 'VIZIO_TEST_ENV is'
-            echo $VIZIO_TEST_ENV
-            python test/test_env.py -v
-      - run:
           name: "test_rows.py "
           halt_build_on_fail: false
           when: always
@@ -80,10 +70,21 @@ workflows:
       - schedule:
           cron: "0 * * * *"
           filters:
+            jobs:
+              only:
+                - build
+            branches:
+              only:
+                - master
+      - schedule:
+          cron: "10 * * * *"
+          filters:
+            jobs:
+              only:
+                - test
             branches:
               only:
                 - master
     jobs:
-      - build
       - test
 
