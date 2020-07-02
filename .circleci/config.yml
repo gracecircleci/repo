@@ -82,7 +82,6 @@ workflows:
   commit-workflow:
     jobs:
       - build
-      - test_distrib
   schedule-workflow:
     triggers:
       - schedule:
@@ -91,4 +90,7 @@ workflows:
             branches:
               only:
                 - master
+    jobs:
+      - build
+      - test_distrib
 
