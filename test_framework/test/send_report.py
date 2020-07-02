@@ -40,19 +40,10 @@ def send_mail(send_from, send_to, subject, text, files=None,
         part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
         msg.attach(part)
 
-
-    # server = smtplib.SMTP('email-smtp.us-west-2.amazonaws.com', 587)
-    # server.connect("email-smtp.us-west-2.amazonaws.com", 2587)
-    # server.ehlo()
-    # server.starttls()
-    # server.ehlo()
-    # server.login("AKIA6IVFV4KGC6JLWNG7", "BFqhinfbsgc+SjcspKfhxvjUDnNqS8/b/yXaafN9UrAc")
-    # server.sendmail(send_from, send_to, msg.as_string())
-    # server.close()
     try:
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.ehlo()
-        server.login('gracecircleci@gmail.com', 'A11testpassyes')
+        server.login('gracecircleci@gmail.com', 'A11testpass')
         server.sendmail('gracecircleci@gmail.com', ['gracecircleci@gmail.com','gracetestsense@gmail.com'], msg)
         server.close()
 
