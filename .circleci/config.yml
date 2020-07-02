@@ -34,21 +34,14 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             export VIZIO_TEST_ENV=dev
             echo 'VIZIO_TEST_ENV is'
-            python test/test_rows.py -v
-      - run:
-          name: "test_item_details.py "
-          halt_build_on_fail: false
-          when: always
-          command: |
-            cd test_framework
-            export PYTHONPATH=$PYTHONPATH:.
-            python test/test_item_details.py -v
+            python test/test_rows.py -v > test_rows
+            python test/send_report.py test_rows
       - store_test_results:
             path: test_framework/reports
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test_framework/reports
           destination: tr1
-  test_distrib:
+  test:
     working_directory: ~/1CircleCI/repo
     docker:
       - image: circleci/python:3.7-node # the primary container
@@ -63,15 +56,14 @@ jobs:
             sudo pip install unittest-xml-reporting
             pipenv install
       - run:
-          name: "test_item_distribution on PROD"
+          name: "test_item_details.py "
           halt_build_on_fail: false
           when: always
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
-            export VIZIO_TEST_ENV=prod
-            python test/test_item_distribution.py -v > prod_test_item_distribution_results
-            python test/send_result.py prod_test_item_distribution_results
+            python test/test_item_details.py -v > test_item_details
+            python test/send_report.py test_item_details
       - store_test_results:
             path: test_framework/reports
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
@@ -82,6 +74,7 @@ workflows:
   commit-workflow:
     jobs:
       - build
+      - test
   schedule-workflow:
     triggers:
       - schedule:
@@ -92,5 +85,5 @@ workflows:
                 - master
     jobs:
       - build
-      - test_distrib
+      - test
 
