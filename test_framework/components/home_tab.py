@@ -22,6 +22,22 @@ class HomeTab(object):
 
         self.dataframe = None
 
+    def getJsonFromVueUrlPost(self, url=None, catalogId=None):
+        if url is None:
+            url = EzUtil.constructUrl(protocol=self.protocol, host=self.host, uri=self.uri, qstring=self.qs)
+        assert url
+
+        outfile = 'output/vue_%s.json' % CatalogEnum(catalogId)
+        hdrs = json.dumps({'BypassFeatureListCache':'true'})
+
+        status_code, url, jsonobj = EzUtil.urlToJsonPostVue(url, data_dict=None, hds_dict=hdrs, outfile=outfile)
+
+        assert status_code == 200
+        assert jsonobj is not None
+        self.logger.info('vue url=%s. output json file is available %s' % (url, outfile))
+        print('vue url=%s. output json file is available %s' % (url, outfile))
+        return url, jsonobj
+
     def getJsonFromHomeUrl(self, url=None, catalogId=None):
         # construct and visit home_tab url
         if url is None:
@@ -33,6 +49,7 @@ class HomeTab(object):
         assert status_code == 200
         assert jsonobj is not None
         self.logger.info('vue url=%s. output json file is available %s' % (url, outfile))
+        print('vue url=%s. output json file is available %s' % (url, outfile))
         return url, jsonobj
 
     def getRowsIid(self, jsonobj):

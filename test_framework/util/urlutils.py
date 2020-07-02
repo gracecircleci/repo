@@ -1,13 +1,52 @@
 import urllib.request
 import urllib.parse
 import json, os.path
+from enum import Enum
 from urllib.parse import unquote, quote
 
-class EzUtil():
+class CatalogEnum(Enum):
+    HOME = 1
+    SHOWS = 2
+    MOVIES = 3
+    LEARN = 20
+    SEARCH = 5
+    def __str__(self):
+        return '%s' % self.name
 
-    @staticmethod
-    def context_token_str():
-        return 'contextToken=-901682349:699519437853925376:0:5234744:5067736:2029148903'
+class EnvironCommon():
+    CATALOG_HOST_DEV = 'catalog-dev.smartcasttv.com'
+    CATALOG_HOST_PROD = 'catalog-prod.smartcasttv.com'
+    VUE_HOST_DEV = 'api-stage.vizio.com'
+    VUE_HOST_PROD = 'api.vizio.com'
+    CONTEXT_TOKEN_DEV = 'contextToken=-901682349:629546385057943552:508:5234744:5067736:2029148903'
+    CONTEXT_TOKEN_PROD = 'contextToken=-27856087:638773072417591296:0:5234744:5067736:-1926405309'
+
+    # if no environment variable set use PROD as default
+    env = os.environ['VIZIO_TEST_ENV'].lower() if (os.environ['VIZIO_TEST_ENV'] and os.environ['VIZIO_TEST_ENV']!='') else 'prod'.lower()
+    print('environment var VIZIO_TEST_ENV not set. Use PROD as the environment')
+    CATALOG_HOST = CATALOG_HOST_PROD if env == 'prod' else CATALOG_HOST_DEV
+    VUE_HOST = VUE_HOST_PROD if env == 'prod' else VUE_HOST_DEV
+    VUE_CONTEXT_TOKEN = CONTEXT_TOKEN_PROD if env == 'prod' else CONTEXT_TOKEN_DEV
+
+    CATALOG_URL = 'http://%s/catalogs?rowsToExpand=100' % CATALOG_HOST
+    VUE_SERVICE_URL = 'http://%s/api/1.0.1.0/vibes/getdata.aspx?%s&handles=[{"Vibe":{"Sid":3020009,"Iid":%d,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % (
+    VUE_HOST, VUE_CONTEXT_TOKEN, CatalogEnum.HOME.value)
+    VUE_SERVICE_SHOW_URL = 'http://%s/api/1.0.1.0/vibes/getdata.aspx?%s&handles=[{"Vibe":{"Sid":3020009,"Iid":%d,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % (
+    VUE_HOST, VUE_CONTEXT_TOKEN, CatalogEnum.SHOWS.value)
+    VUE_SERVICE_MOVIE_URL = 'http://%s/api/1.0.1.0/vibes/getdata.aspx?%s&handles=[{"Vibe":{"Sid":3020009,"Iid":%d,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % (
+    VUE_HOST, VUE_CONTEXT_TOKEN, CatalogEnum.MOVIES.value)
+    VUE_SERVICE_SEARCH_URL = 'http://%s/api/1.0.1.0/vibes/getdata.aspx?%s&handles=[{"Vibe":{"Sid":3020009,"Iid":%d,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % (
+    VUE_HOST, VUE_CONTEXT_TOKEN, CatalogEnum.SEARCH.value)
+    VUE_SERVICE_LEARN_URL = 'http://%s/api/1.0.1.0/vibes/getdata.aspx?%s&handles=[{"Vibe":{"Sid":3020009,"Iid":%d,"_tid":18},"Vid":2000002,"Expand":2,"_tid":14}]&access_key=D/0FFxEJr5gXiH4qpf0k48V9Agw=&access_sig=COr+y/+4I9W64iYci+uJt9QCouE=' % (
+    VUE_HOST, VUE_CONTEXT_TOKEN, CatalogEnum.LEARN.value)
+    print('=== env===', env)
+    print('HOME: catalog_url=%s, \n vue_url=%s' % (CATALOG_URL, VUE_SERVICE_URL))
+    print('SHOWS:', VUE_SERVICE_SHOW_URL)
+    print('MOVIE:', VUE_SERVICE_MOVIE_URL)
+    print('SEARCH:', VUE_SERVICE_SEARCH_URL)
+    print('SEARCH:', VUE_SERVICE_LEARN_URL)
+
+class EzUtil():
 
     @staticmethod
     def constructUrlFromDict(dict):
@@ -50,6 +89,24 @@ class EzUtil():
         with open(outfile, 'w+') as fo:
             json.dump(jsonobj, fo, separators=(',',':'), sort_keys=True, indent=4)
         return response.status, jsonobj
+
+    @staticmethod
+    def urlToJsonPostVue(url, data_dict, hds_dict,outfile):
+
+        response = urllib.request.urlopen(url)
+        assert response.status == 200
+
+        data = response.read().decode('utf-8')
+        jsonobj = json.loads(data)
+        #outfile filepath - create dir if not exists
+        fpath, fname = os.path.split(outfile)
+        fpath = fpath if fpath else 'output'
+        if not os.path.exists(fpath):
+            os.makedirs(fpath)
+        # write the http response json to a file for debugging
+        with open(outfile, 'w+') as fo:
+            json.dump(jsonobj, fo, separators=(',',':'), sort_keys=True, indent=4)
+        return response.status, url, jsonobj
 
     @staticmethod
     def pprintJsonobjToFile(jsonobj, outfile='output/jsonToFile.json'):

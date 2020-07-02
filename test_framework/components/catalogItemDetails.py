@@ -3,7 +3,7 @@ from urllib.parse import unquote, quote, urlparse
 import pandas as pd
 from components.catalog import CatalogEnum, Const
 from components.catalog import Catalog
-from test.test_catalog import TestEnvDefault, CatalogCommon
+from util.urlutils import EzUtil, EnvironCommon
 from urllib.parse import unquote, quote
 
 
@@ -25,21 +25,19 @@ class CatSvcItemDetails(object):
 
     def getImage(self):
         iid = self.itemDetailsJson['id']
-        if self.itemDetailsJson['badgePath'] and len(self.itemDetailsJson['badgePath']) >  5:
-            unquoted_badgePathUrl = unquote(self.itemDetailsJson['badgePath'])
-            querystr = urlparse(unquoted_badgePathUrl).query
-            str1 = querystr.split('=')[1].split('&')[0]  # '{"Sid":1034,"Iid":1000004,"_tid":18}'
-            sid_iid_json = json.loads(str1)
-            image_iid = sid_iid_json['Iid']
-            print(image_iid)
-            return image_iid
-        elif self.itemDetailsJson['imagePath']:
-            imagePathTokens = self.itemDetailsJson['imagePath'].split('/')
-            print('imagePathTokens[4]', imagePathTokens[4])
-            return imagePathTokens[4]
+        if 'getimage.aspx' in self.itemDetailsJson['imagePath']:
+            imgUrl = unquote(self.itemDetailsJson['imagePath'])
+            qs = imgUrl.split('?')[1]
+            vibeHandelJson=json.loads(qs.split('=')[1].split('&')[0])
+            imageIid = vibeHandelJson['Iid']
+            imageIid = imageIid if isinstance(imageIid, str) else str(imageIid)
+            return imageIid
         else:
-            print('We should not get here')
-            return None
+            imagePathTokens = self.itemDetailsJson['imagePath'].split('/')
+            imageIid = imagePathTokens[4]
+            imageIid = imageIid if isinstance(imageIid, str) else str(imageIid)
+            return imageIid
+
 
     def getMetadata(self):
         return self.itemDetailsJson['metadata']
@@ -62,7 +60,7 @@ class CatalogRows(object):
 
 class CatalogSvcTestUtil(object):
     @staticmethod
-    def startUp(url=CatalogCommon.CATALOG_URL, catalogId=CatalogEnum.MOVIES.value):
+    def startUp(url=EnvironCommon.CATALOG_URL, catalogId=CatalogEnum.MOVIES.value):
         cat = Catalog()
         cat_url, jsonObj = Catalog().getJsonFromCatalogUrl(catalogId=catalogId, url=url) #catalogId for the http header
         return cat_url, jsonObj

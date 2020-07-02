@@ -1,5 +1,4 @@
-from components.catalog import CatalogEnum, Const
-from test.test_catalog import TestEnvDefault, CatalogCommon
+from util.urlutils import EzUtil, EnvironCommon, CatalogEnum
 from components.VueItemDetails import VueSvcTestUtil
 
 
@@ -23,6 +22,7 @@ class VueSvcRows(object):
         return iid_list
 
     def getItemsLength(self):
+        print('Vue: items=%s' % self.getItems())
         length = len(self.getItems())
         return length
 
@@ -55,7 +55,7 @@ class VueSvcRowUtil(object):
 
 
 if __name__ == '__main__':
-    vue_url = CatalogCommon.VUE_SERVICE_URL
+    vue_url = EnvironCommon.VUE_SERVICE_URL
     catalogId = CatalogEnum.HOME.value
     jsonstr, vue_jsonObj = VueSvcTestUtil.startUp(url=vue_url, catalogId=catalogId)
     for theiid in [1300, 1301]:

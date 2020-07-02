@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 from components.catalog import CatalogEnum, Const
-from test.test_catalog import TestEnvDefault, CatalogCommon
+from util.urlutils import EzUtil, EnvironCommon
 from components.catalogItemDetails import CatalogSvcTestUtil
 
 
@@ -19,6 +19,7 @@ class CatSvcRows(object):
         return self.theRowJson['items']
 
     def getItemsLength(self):
+        print('Catalog items=%s' % self.theRowJson['items'])
         return len(self.theRowJson['items'])
 
 
@@ -46,7 +47,7 @@ class CatalogSvcRowUtil(object):
 
 
 if __name__ == '__main__':
-    cat_url = CatalogCommon.CATALOG_URL
+    cat_url = EnvironCommon.CATALOG_URL
     catalogId = CatalogEnum.HOME.value
     cat_url, cat_jsonObj = CatalogSvcTestUtil.startUp(url=cat_url, catalogId=catalogId)
     json = CatalogSvcRowUtil.getRowItemByIid(cat_jsonObj, 1300)

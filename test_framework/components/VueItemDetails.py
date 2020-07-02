@@ -2,7 +2,7 @@ import urllib.request
 import json
 from components.catalog import CatalogEnum, Const
 from components.home_tab import HomeTab
-from test.test_catalog import TestEnvDefault, CatalogCommon
+from util.urlutils import EzUtil, EnvironCommon
 
 class VueSvcItemDetails(object):
     def __init__(self, itemDetailsJson):
@@ -36,16 +36,17 @@ class VueSvcItemDetails(object):
         return exist
 
     def getImage(self):
-        if 'BigScreenPlayInfo' in self.itemDetailsJson['Frame']['Data'] and \
+        if 'ImageId' in self.itemDetailsJson['Frame']['Data']['ImageHandles'][0]:
+                return self.itemDetailsJson['Frame']['Data']['ImageHandles'][0]['ImageId']
+        elif "VibeHandle" in self.itemDetailsJson['Frame']['Data']['ImageHandles'][0] :
+                return self.itemDetailsJson['Frame']['Data']['ImageHandles'][0]['VibeHandle']['Iid']
+        elif 'BigScreenPlayInfo' in self.itemDetailsJson['Frame']['Data'] and \
           'IMAGE_HANDLE' in self.itemDetailsJson['Frame']['Data']['BigScreenPlayInfo'] and \
           'Iid' in self.itemDetailsJson['Frame']['Data']['BigScreenPlayInfo']['IMAGE_HANDLE']['VibeHandle']:
             iid_str = self.itemDetailsJson['Frame']['Data']['BigScreenPlayInfo']['IMAGE_HANDLE']['VibeHandle']['Iid']
             print('type(iid)=', type(iid_str))
             print(iid_str)
             return iid_str
-
-        elif 'ImageId' in self.itemDetailsJson['Frame']['Data']['ImageHandles'][0]:
-            return self.itemDetailsJson['Frame']['Data']['ImageHandles'][0]['ImageId']
         else:
             return None
 
@@ -60,7 +61,7 @@ class VueSvcItemDetails(object):
 
 class VueSvcTestUtil(object):
     @staticmethod
-    def startUp(url=CatalogCommon.VUE_SERVICE_URL, catalogId=CatalogEnum.HOME.value):
+    def startUp(url=EnvironCommon.VUE_SERVICE_URL, catalogId=CatalogEnum.HOME.value):
 
         response = urllib.request.urlopen(url)
         assert response.status == 200
@@ -70,6 +71,18 @@ class VueSvcTestUtil(object):
         url, jsonObj = vue.getJsonFromHomeUrl(url=url, catalogId=catalogId)
 
         return json_str, jsonObj
+
+    @staticmethod
+    def startUpCache(url=EnvironCommon.VUE_SERVICE_URL, catalogId=CatalogEnum.HOME.value):
+        response = urllib.request.urlopen(url)
+        assert response.status == 200
+        json_str = response.read().decode('utf-8')
+
+        vue = HomeTab()
+        url, jsonObj = vue.getJsonFromVueUrlPost(url=url, catalogId=catalogId)
+
+        return json_str, jsonObj
+
 
     @staticmethod
     def getPageRows(jsonObj)->list:

@@ -48,19 +48,47 @@ jobs:
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test_framework/reports
           destination: tr1
-
+  test_distrib:
+    working_directory: ~/1CircleCI/repo
+    docker:
+      - image: circleci/python:3.7-node # the primary container
+    steps:
+      - checkout # check out the code in the project directory
+      - run:
+          name: "Install dependencies"
+          command: | # use pipenv to install dependencies
+            sudo pip install pandas
+            sudo pip install pipenv
+            sudo pip install PyUnitReport
+            sudo pip install unittest-xml-reporting
+            pipenv install
+      - run:
+          name: "test_item_distribution on PROD"
+          halt_build_on_fail: false
+          when: always
+          command: |
+            cd test_framework
+            export PYTHONPATH=$PYTHONPATH:.
+            export VIZIO_TEST_ENV=prod
+            python test/test_item_distribution.py -v > prod_test_item_distribution_results
+            python test/send_result.py prod_test_item_distribution_results
+      - store_test_results:
+            path: test_framework/reports
+      - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: test_framework/reports
+          destination: tr1
 workflows:
   version: 2
   commit-workflow:
     jobs:
       - build
+      - test_distrib
   schedule-workflow:
     triggers:
       - schedule:
-          cron: "45 * * * *"
+          cron: "0 * * * *"
           filters:
             branches:
               only:
                 - master
-    jobs:
-      - build
+
