@@ -24,7 +24,6 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             export VIZIO_TEST_ENV=prod
             python test/test_rows.py -v > test_rows
-            python test/send_report.py test_rows
       - store_test_results:
             path: test_framework/reports
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
@@ -53,7 +52,6 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:.
             export VIZIO_TEST_ENV=prod
             python test/test_item_details.py -v > test_item_details
-            python test/send_report.py test_item_details
       - store_test_results:
             path: test_framework/reports
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
@@ -69,13 +67,6 @@ workflows:
     triggers:
       - schedule:
           cron: "0 * * * *"
-          filters:
-            branches:
-              only:
-                - master
-    triggers:
-      - schedule:
-          cron: "10 * * * *"
           filters:
             branches:
               only:
