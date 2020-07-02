@@ -70,18 +70,13 @@ workflows:
       - schedule:
           cron: "0 * * * *"
           filters:
-            jobs:
-              only:
-                - build
             branches:
               only:
                 - master
+    triggers:
       - schedule:
           cron: "10 * * * *"
           filters:
-            jobs:
-              only:
-                - test
             branches:
               only:
                 - master
