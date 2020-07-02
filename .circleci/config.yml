@@ -32,8 +32,7 @@ jobs:
             echo 'running test_rows.py...'
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
-            export VIZIO_TEST_ENV=dev
-            echo 'VIZIO_TEST_ENV is'
+            export VIZIO_TEST_ENV=prod
             python test/test_rows.py -v > test_rows
             python test/send_report.py test_rows
       - store_test_results:
@@ -62,6 +61,7 @@ jobs:
           command: |
             cd test_framework
             export PYTHONPATH=$PYTHONPATH:.
+            export VIZIO_TEST_ENV=prod
             python test/test_item_details.py -v > test_item_details
             python test/send_report.py test_item_details
       - store_test_results:
